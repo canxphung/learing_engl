@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package common;
+
+message Status {
+  int32 code = 1;
+  string message = 2;
+  repeated string details = 3;
+}
+
+message StatusResponse {
+  Status status = 1;
+}
+
+message IdRequest {
+  string id = 1;
+}
+
+message SearchRequest {
+  string query = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+  map<string, string> filters = 4;
+}
+
+message Empty {}

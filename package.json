@@ -1,0 +1,29 @@
+{
+  "name": "website-learn",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": [
+    "apps/*",
+    "lib/*"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start:user-service:dev": "cd apps/user-service; ts-node-dev --respawn --transpile-only --ignore-watch node_modules src/main.ts",
+    "start:user-service": "node dist/apps/user-service/main.js",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@nestjs/typeorm": "^11.0.0",
+    "class-validator": "^0.14.2",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.27"
+  }
+}
