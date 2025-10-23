@@ -2,7 +2,8 @@
   "files": [],
   "references": [
     { "path": "lib" },
-    { "path": "apps/user-service" }
+    { "path": "apps/user-service" },
+    { "path": "apps/auth" }
   ],
   
   "compilerOptions": {

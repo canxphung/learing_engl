@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package common;
+
+option go_package = "github.com/website_learn/protos/common";
+
+// Pagination information for list responses
+message Pagination {
+  int32 page = 1;           // Current page number (1-indexed)
+  int32 limit = 2;          // Number of items per page
+  int32 total = 3;          // Total number of items
+  int32 total_pages = 4;    // Total number of pages
+  bool has_next = 5;        // Whether there is a next page
+  bool has_prev = 6;        // Whether there is a previous page
+}
+
+// Page request for paginated queries
+message PageRequest {
+  int32 page = 1;           // Page number to retrieve (default: 1)
+  int32 limit = 2;          // Items per page (default: 10, max: 100)
+  string sort_by = 3;       // Field to sort by
+  bool sort_desc = 4;       // Sort in descending order
+}
+
+// Cursor-based pagination request
+message CursorRequest {
+  string cursor = 1;        // Cursor for pagination
+  int32 limit = 2;          // Items per page
+}
+
+// Cursor-based pagination response
+message CursorPagination {
+  string next_cursor = 1;   // Cursor for next page
+  string prev_cursor = 2;   // Cursor for previous page
+  bool has_next = 3;        // Whether there is a next page
+  bool has_prev = 4;        // Whether there is a previous page
+  int32 total = 5;          // Total number of items (optional)
+}

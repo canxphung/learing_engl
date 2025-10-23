@@ -1,0 +1,155 @@
+syntax = "proto3";
+
+package user;
+
+import "common/common.proto";
+import "common/pagination.proto";
+
+option go_package = "github.com/website_learn/protos/user";
+
+// User entity
+message User {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  string level = 4;              // beginner, intermediate, advanced
+  repeated string goals = 5;
+  string created_at = 6;
+  string updated_at = 7;
+  Profile profile = 8;
+  bool is_active = 9;
+  bool email_verified = 10;
+  string last_login = 11;
+}
+
+// User profile information
+message Profile {
+  string avatar_url = 1;
+  string country = 2;
+  string native_language = 3;
+  int32 age = 4;
+  map<string, string> preferences = 5;
+  string bio = 6;
+  string timezone = 7;
+}
+
+// Request to create a new user
+message CreateUserRequest {
+  string email = 1;
+  string password = 2;
+  string name = 3;
+  string level = 4;
+  repeated string goals = 5;
+  Profile profile = 6;
+}
+
+// Request to update user information
+message UpdateUserRequest {
+  string id = 1;
+  string name = 2;
+  string level = 3;
+  repeated string goals = 4;
+  Profile profile = 5;
+}
+
+// Request to update user profile
+message UpdateProfileRequest {
+  string user_id = 1;
+  Profile profile = 2;
+}
+
+// Single user response
+message UserResponse {
+  common.Status status = 1;
+  User user = 2;
+}
+
+// Multiple users response
+message UsersResponse {
+  common.Status status = 1;
+  repeated User users = 2;
+  common.Pagination pagination = 3;
+}
+
+// Request to validate user credentials
+message ValidateUserRequest {
+  string email = 1;
+  string password = 2;
+}
+
+// Response for user validation
+message ValidateUserResponse {
+  common.Status status = 1;
+  bool valid = 2;
+  User user = 3;
+}
+
+// Query parameters for searching users
+message UserQuery {
+  string id = 1;
+  string email = 2;
+  repeated string levels = 3;
+  string country = 4;
+  bool is_active = 5;
+  string created_after = 6;
+  string created_before = 7;
+}
+
+// Request to get user by ID
+message GetUserRequest {
+  string id = 1;
+}
+
+// Request to delete user
+message DeleteUserRequest {
+  string id = 1;
+}
+
+// Request to list users with pagination
+message ListUsersRequest {
+  common.PageRequest page = 1;
+  UserQuery query = 2;
+}
+
+// Request to change user password
+message ChangePasswordRequest {
+  string user_id = 1;
+  string old_password = 2;
+  string new_password = 3;
+}
+
+// Request to verify user email
+message VerifyEmailRequest {
+  string user_id = 1;
+  string verification_token = 2;
+}
+
+// User service definition
+service UserService {
+  // Create a new user
+  rpc CreateUser(CreateUserRequest) returns (UserResponse);
+  
+  // Get user by ID
+  rpc GetUser(GetUserRequest) returns (UserResponse);
+  
+  // Update user information
+  rpc UpdateUser(UpdateUserRequest) returns (UserResponse);
+  
+  // Update user profile
+  rpc UpdateProfile(UpdateProfileRequest) returns (UserResponse);
+  
+  // Delete user
+  rpc DeleteUser(DeleteUserRequest) returns (common.StatusResponse);
+  
+  // List users with pagination
+  rpc ListUsers(ListUsersRequest) returns (UsersResponse);
+  
+  // Validate user credentials
+  rpc ValidateUser(ValidateUserRequest) returns (ValidateUserResponse);
+  
+  // Change user password
+  rpc ChangePassword(ChangePasswordRequest) returns (common.StatusResponse);
+  
+  // Verify user email
+  rpc VerifyEmail(VerifyEmailRequest) returns (common.StatusResponse);
+}

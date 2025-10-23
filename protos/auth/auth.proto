@@ -1,0 +1,258 @@
+syntax = "proto3";
+
+package auth;
+
+import "common/common.proto";
+
+option go_package = "github.com/website_learn/protos/auth";
+
+// Authentication request with email and password
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+  string device_id = 3;        // Optional device identifier
+  string device_name = 4;      // Optional device name
+}
+
+// Authentication response with tokens
+message LoginResponse {
+  common.Status status = 1;
+  string access_token = 2;
+  string refresh_token = 3;
+  int64 expires_in = 4;        // Token expiration time in seconds
+  string token_type = 5;       // e.g., "Bearer"
+  UserInfo user = 6;
+}
+
+// User registration request
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+  string name = 3;
+  string level = 4;
+  repeated string goals = 5;
+}
+
+// Registration response
+message RegisterResponse {
+  common.Status status = 1;
+  string user_id = 2;
+  string verification_token = 3;  // For email verification
+}
+
+// Refresh token request
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+// Refresh token response
+message RefreshTokenResponse {
+  common.Status status = 1;
+  string access_token = 2;
+  string refresh_token = 3;
+  int64 expires_in = 4;
+}
+
+// Logout request
+message LogoutRequest {
+  string access_token = 1;
+  string refresh_token = 2;
+  bool logout_all_devices = 3;  // Logout from all devices
+}
+
+// Password reset request
+message ForgotPasswordRequest {
+  string email = 1;
+}
+
+// Password reset response
+message ForgotPasswordResponse {
+  common.Status status = 1;
+  string reset_token = 2;
+}
+
+// Reset password with token
+message ResetPasswordRequest {
+  string reset_token = 1;
+  string new_password = 2;
+}
+
+// Verify token request
+message VerifyTokenRequest {
+  string token = 1;
+}
+
+// Verify token response
+message VerifyTokenResponse {
+  common.Status status = 1;
+  bool valid = 2;
+  UserInfo user = 3;
+  int64 expires_at = 4;
+}
+
+// Change password request (for authenticated users)
+message ChangePasswordRequest {
+  string old_password = 1;
+  string new_password = 2;
+}
+
+// Email verification request
+message VerifyEmailRequest {
+  string verification_token = 1;
+}
+
+// Resend verification email
+message ResendVerificationRequest {
+  string email = 1;
+}
+
+// User information returned in auth responses
+message UserInfo {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  string level = 4;
+  repeated string roles = 5;
+  repeated string permissions = 6;
+  bool email_verified = 7;
+}
+
+// OAuth2 authentication request
+message OAuthLoginRequest {
+  string provider = 1;          // google, facebook, github, etc.
+  string code = 2;              // Authorization code
+  string redirect_uri = 3;
+  string state = 4;
+}
+
+// OAuth2 authentication response
+message OAuthLoginResponse {
+  common.Status status = 1;
+  string access_token = 2;
+  string refresh_token = 3;
+  int64 expires_in = 4;
+  UserInfo user = 5;
+  bool is_new_user = 6;         // True if user was just created
+}
+
+// Two-factor authentication setup request
+message Setup2FARequest {
+  string user_id = 1;
+}
+
+// Two-factor authentication setup response
+message Setup2FAResponse {
+  common.Status status = 1;
+  string secret = 2;            // Secret key for TOTP
+  string qr_code_url = 3;       // QR code URL for scanning
+  repeated string backup_codes = 4;
+}
+
+// Two-factor authentication verification
+message Verify2FARequest {
+  string user_id = 1;
+  string code = 2;              // 6-digit TOTP code
+}
+
+// Two-factor authentication disable request
+message Disable2FARequest {
+  string user_id = 1;
+  string password = 2;
+}
+
+// Session information
+message Session {
+  string id = 1;
+  string user_id = 2;
+  string device_id = 3;
+  string device_name = 4;
+  string ip_address = 5;
+  string user_agent = 6;
+  string created_at = 7;
+  string last_activity = 8;
+  bool is_active = 9;
+}
+
+// List active sessions request
+message ListSessionsRequest {
+  string user_id = 1;
+}
+
+// List active sessions response
+message ListSessionsResponse {
+  common.Status status = 1;
+  repeated Session sessions = 2;
+}
+
+// Revoke session request
+message RevokeSessionRequest {
+  string session_id = 1;
+}
+
+// Check permission request
+message CheckPermissionRequest {
+  string user_id = 1;
+  string resource = 2;
+  string action = 3;            // read, write, delete, etc.
+}
+
+// Check permission response
+message CheckPermissionResponse {
+  common.Status status = 1;
+  bool allowed = 2;
+  string reason = 3;
+}
+
+// Authentication service definition
+service AuthService {
+  // User login
+  rpc Login(LoginRequest) returns (LoginResponse);
+  
+  // User registration
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  
+  // Refresh access token
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+  
+  // User logout
+  rpc Logout(LogoutRequest) returns (common.StatusResponse);
+  
+  // Request password reset
+  rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse);
+  
+  // Reset password with token
+  rpc ResetPassword(ResetPasswordRequest) returns (common.StatusResponse);
+  
+  // Verify access token
+  rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse);
+  
+  // Change password (authenticated)
+  rpc ChangePassword(ChangePasswordRequest) returns (common.StatusResponse);
+  
+  // Verify email address
+  rpc VerifyEmail(VerifyEmailRequest) returns (common.StatusResponse);
+  
+  // Resend verification email
+  rpc ResendVerification(ResendVerificationRequest) returns (common.StatusResponse);
+  
+  // OAuth login
+  rpc OAuthLogin(OAuthLoginRequest) returns (OAuthLoginResponse);
+  
+  // Setup two-factor authentication
+  rpc Setup2FA(Setup2FARequest) returns (Setup2FAResponse);
+  
+  // Verify two-factor authentication code
+  rpc Verify2FA(Verify2FARequest) returns (common.StatusResponse);
+  
+  // Disable two-factor authentication
+  rpc Disable2FA(Disable2FARequest) returns (common.StatusResponse);
+  
+  // List active sessions
+  rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse);
+  
+  // Revoke a session
+  rpc RevokeSession(RevokeSessionRequest) returns (common.StatusResponse);
+  
+  // Check user permission
+  rpc CheckPermission(CheckPermissionRequest) returns (CheckPermissionResponse);
+}

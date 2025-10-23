@@ -1,0 +1,10 @@
+version: v1
+plugins:
+  - plugin: ts-proto
+    out: lib/contract
+    strategy: all
+    path: .\\node_modules\\.bin\\protoc-gen-ts_proto.cmd
+    opt:
+      - outputServices=grpc-js
+      - esModuleInterop=true
+      - forceLong=string

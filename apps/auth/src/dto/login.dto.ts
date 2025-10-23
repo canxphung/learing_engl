@@ -1,9 +1,10 @@
-import { Isstring , MinLength } from 'class-validator';
+import { IsString, MinLength } from 'class-validator';
+
 export class LoginDto {
-  @Isstring()
+  @IsString()
   identifier: string;
 
-  @Isstring()
-  @MinLength (6)
-  password : string;
+  @IsString()
+  @MinLength(6)
+  password: string;
 }
